@@ -35,6 +35,12 @@ app.post("/register", (req, res) => {
     .catch((err) => res.json(err));
 });
 
+app.get("/contacts", (req, res) => {
+  UsersModel.find({})
+    .then((users) => res.json(users))
+    .catch((err) => res.json(err));
+})
+
 app.post("/createUsers", (req, res) => {
   UsersModel.create(req.body)
     .then((users) => res.json(users))
