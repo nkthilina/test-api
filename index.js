@@ -47,12 +47,21 @@ app.post("/createUsers", (req, res) => {
     .catch((err) => res.json(err));
 })
 
+
+app.get('/editUser/:id', (req, res) => {
+  const id = req.params.id
+  UsersModel.findById({_id: id})
+    .then((user) => res.json(user))
+    .catch((err) => res.json(err));
+})
+
 app.put('/editUser/:id', (req, res) => {
   const id = req.params.id
   UsersModel.findByIdAndUpdate({_id: id}, req.body)
-    .then((res) => res.json(res))
+    .then((updatedUser) => res.json(updatedUser))
     .catch((err) => res.json(err));
 })
+
 
 app.delete('/deleteUser/:id', (req, res) => {
   const id = req.params.id
