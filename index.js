@@ -8,10 +8,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect("mongodb://127.0.0.1:27017/employee");
-// mongoose.connect('mongodb://localhost:27017/twc-test', {
-// useNewUrlParser: true,
-// useUnifiedTopology: true
+// mongoose.connect("mongodb://127.0.0.1:27017/employee");
+mongoose.connect('mongodb://127.0.0.1:27017/twc-test')
+.then(() => {
+  console.log("MongoDB connected");
+})
+.catch((err) => console.log(err));
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -19,7 +21,7 @@ app.post("/login", (req, res) => {
   EmployeeModel.findOne({ email: email }).then((user) => {
     if (user) {
       if (user.password === password) {
-        res.json("Success. Welcome " + user.email);
+        res.json("Success");
       }else {
         res.json({ error: "Password is incorrect. Please try again" });
       }
@@ -29,10 +31,24 @@ app.post("/login", (req, res) => {
   });
 });
 
+// app.post("/register", (req, res) => {
+//   EmployeeModel.create(req.body)
+//     .then((employees) => res.json(employees))
+//     .catch((err) => res.json(err));
+// });
+
 app.post("/register", (req, res) => {
-  EmployeeModel.create(req.body)
-    .then((employees) => res.json(employees))
-    .catch((err) => res.json(err));
+  const { email, password } = req.body;
+
+  EmployeeModel.findOne({ email: email }).then((user) => {
+    if (user) {
+      res.json({ error: "User already registered. Please login" });
+    } else {
+      EmployeeModel.create(req.body)
+        .then((newUser) => res.json(newUser))
+        .catch((err) => res.status(500).json({ error: "An error occurred while registering the user" }));
+    }
+  });
 });
 
 app.get("/contacts", (req, res) => {
@@ -70,6 +86,7 @@ app.delete('/deleteUser/:id', (req, res) => {
     .catch((err) => res.json(err));
 })
 
-app.listen(3001, () => {
-  console.log("Server running on port 3001");
+const PORT = 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

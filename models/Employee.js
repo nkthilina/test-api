@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 const employeeSchema = new mongoose.Schema({
-    email: String,
+    email: {
+        type: String,
+        unique: true
+    },
+    // String,
     password: String
     // confirmPassword: String
 })
