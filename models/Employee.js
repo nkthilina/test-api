@@ -5,9 +5,7 @@ const employeeSchema = new mongoose.Schema({
         type: String,
         unique: true
     },
-    // String,
     password: String
-    // confirmPassword: String
 })
 
 const EmployeeModel = mongoose.model("employees", employeeSchema);

@@ -1,19 +1,34 @@
+// Load environment variables from .env file
+require('dotenv').config();
+
 const express = require("express");
 const mongoose = require("mongoose");
+const app = express();
 const cors = require("cors");
 const EmployeeModel = require("./models/Employee");
 const UsersModel = require("./models/Users");
+const userRoutes = require("./routes/userRoutes");
+// const employeeRoutes = require("./routes/employeeRoutes");
 
-const app = express();
-app.use(express.json());
 app.use(cors());
 
-// mongoose.connect("mongodb://127.0.0.1:27017/employee");
-mongoose.connect('mongodb://127.0.0.1:27017/twc-test')
-.then(() => {
-  console.log("MongoDB connected");
-})
-.catch((err) => console.log(err));
+// middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Use the environment variables
+const port = process.env.PORT || 3001;
+const databaseUrl = process.env.DATABASE_URL;
+
+mongoose
+  .connect(databaseUrl)
+  .then(() => console.log("Database connected"))
+  .catch((err) => console.error("Database connection error", err));
+
+// Routes prefix
+// app.use("/", userRoutes);
+// app.use("/employees", employeeRoutes);
+app.use("/contacts", userRoutes);
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -51,11 +66,11 @@ app.post("/register", (req, res) => {
   });
 });
 
-app.get("/contacts", (req, res) => {
-  UsersModel.find({})
-    .then((users) => res.json(users))
-    .catch((err) => res.json(err));
-})
+// app.get("/contacts", (req, res) => {
+//   UsersModel.find({})
+//     .then((users) => res.json(users))
+//     .catch((err) => res.json(err));
+// })
 
 app.post("/createUsers", (req, res) => {
   UsersModel.create(req.body)
@@ -86,7 +101,6 @@ app.delete('/deleteUser/:id', (req, res) => {
     .catch((err) => res.json(err));
 })
 
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
